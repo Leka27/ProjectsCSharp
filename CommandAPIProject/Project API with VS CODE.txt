@@ -1,0 +1,116 @@
+Project API with VS CODE
+
+Create project:
+    Open VS CODE
+    Open terminal
+    Enter your file (cd ...)
+    type dotnet new - this give you all dotnet templates
+    type dotnet new webapi -n CommandProject - this will create the project CommandProject with the template webapi
+    To open the folder created type code -r nameOfFolder
+    Install the c# extension on VS code(it will be asked only once)
+    Delete unnecessary files that are created automatically
+    The program class is where the application will have its begining - where the main method is
+    The startup class is the central of the application
+    csproj -> install packages
+    launchsettings.json->set yout enviroment and the url for the local enviroment
+    appsetings - > you can use this type of file to set the configurations for the enviroment chosen
+
+TO RUN THE PROJECT 
+    open the terminal
+    enter the project folder
+    type dotnet run
+
+Inicializing project                                                                                                                                                                                                      
+    Create a model folder
+    Add yout model ->Command
+    Add namespace
+    Add your properties
+    
+Creating the repository interface
+    Interface -> contract with the class that you are going to use
+    Create folder for interfaces
+    Create the interface for your repository that will be created
+    Create a class that will implement the interface (The first he used was a mock class to test the interface)
+    To implement the interface on the new class -> click on the interface and ctrl + .
+
+Create a controller
+    Your model will be create with name singular, the controller is plural
+    Create our endpoints and configuration for the endpoints
+    implement the repository
+
+Dependency injection
+    To insert a service or instance of a class with dependency injection you can use
+    AddSingleton: same for every request.
+    AddScoped:Created once per client requestTransient: new instance created for every time.
+
+    using Microsoft.Extensions.DependencyInjection;
+
+    To create a constructor just start tiping ctor and select the first option available.
+
+Create your database.
+    localhost
+    windows authentication
+
+Create a new user to have a new login for your database.
+    Your connection->Security->(right click)New logins
+    Create the new login and password and give the server role
+    Configuração de login do servidor sql local
+    https://support.microsoft.com/pt-br/help/555332/login-failed-for-user-error-message-when-you-log-on-to-sql-server
+    Connection created;
+    Admin
+    123456
+
+Add the connection string to your project
+    You can put on the appsettings file
+    Create the connection as the example:
+        "Server=localhost;Initial Catalog=CommandDb;User ID=Admin;Password=123456;"
+    Go to your startUp file and add the configuration to use the connectionstring
+    services.AddDbContext<CommanderContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("CommanderConnection")));
+    After that you can create migrations.
+    Command: dotnet ef migrations add Migration name
+    Check the changes that are necessary to be done in the migrations.
+    In case is necessary to change remove the migration: dotnet ef migrations remove Name
+    Make changes on your model with data anotations and recreate
+    After the migration is created is necessary to update the database to actually create the changes: dotnet ef database update
+    If its all done correctly the database will be created and your tables.
+
+Adding packages to your project to use EntityFramework.
+    Open terminal
+    Go to your project folder
+    Leave your csproj open to double check
+    Open the nuget page 
+    search the packages and run the command line.
+    Microsoft.EntityFramework.Core
+    Microsoft.EntityFrameworkCore.Design
+    Microsoft.EntityFrameworkCore.SqlServer
+
+    The last step is install the migrations package.
+    run command dotnet ef (to see the tool set you have of commands to run from the entityframerwork library)
+    If you dont have this option install: dotnet tool inatll --global dotnet-ef
+
+Create your DBContext
+    Data folder->new commandContext
+    Finish the file.
+    
+Create DTO's 
+    to module your responses to the external client and not just use the internal model.
+    Install packages to support DTO.
+    AutoMapper(not necessary, you could create your own mapper or just do manually in case of mapper failure.)
+    dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection --version 7.0.0
+    Insert the automapper to the startup file: services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+    Create the profiles to inform the mapper witch object will transform to wich
+    Add the dependecy injection to the controller to use the mapper and transform de object.
+
+Creating the other operations is rather simple
+
+Create a Patch operations
+    Patch is a partial update to be done.
+    To function correctly is necessary the instalation of some packages.
+    dotnet add package Microsoft.AspNetCore.JsonPatch
+    dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+
+To use the NewtonsoftJson is necessary create the configuration on the startup class
+    services.AddControllers().AddNewtonsoftJson(s => {
+        s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
+            
